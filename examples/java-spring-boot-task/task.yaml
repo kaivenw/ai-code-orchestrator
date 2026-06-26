@@ -1,0 +1,68 @@
+id: "build-login-api"
+name: "实现登录接口 (Spring Boot)"
+description: "为现有 Spring Boot 项目实现用户登录接口，包括参数校验、业务逻辑、测试和文档。"
+
+project:
+  type: "java"
+  framework: "spring-boot"
+  root: "."
+
+goals:
+  - "新增登录接口"
+  - "完成参数校验"
+  - "完成单元测试"
+  - "不破坏现有功能"
+
+constraints:
+  - "不要擅自重构无关模块"
+  - "不要修改数据库连接配置"
+  - "不要删除现有代码"
+  - "所有变更必须有说明"
+
+steps:
+  - id: "analyze"
+    title: "分析现有项目结构"
+    expected_output:
+      - "找到用户相关模块"
+      - "找到认证相关代码"
+      - "输出实现计划"
+  - id: "dto"
+    title: "实现登录请求和响应 DTO"
+    expected_output:
+      - "LoginRequest"
+      - "LoginResponse"
+  - id: "service"
+    title: "实现登录 Service"
+    expected_output:
+      - "账号密码校验"
+      - "异常处理"
+      - "token 生成或复用现有机制"
+  - id: "controller"
+    title: "实现登录 Controller"
+    expected_output:
+      - "POST /login"
+      - "统一返回格式"
+  - id: "test"
+    title: "补充测试"
+    expected_output:
+      - "正常登录测试"
+      - "错误密码测试"
+      - "参数为空测试"
+  - id: "final_check"
+    title: "最终验收"
+    expected_output:
+      - "运行测试"
+      - "输出变更文件"
+      - "输出使用说明"
+
+acceptance:
+  commands:
+    - "mvn test"
+  required:
+    - "所有测试通过"
+    - "无明显编译错误"
+    - "输出最终总结"
+
+context:
+  coding_style: "遵循现有项目风格"
+  language: "zh-CN"

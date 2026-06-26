@@ -1,0 +1,49 @@
+id: "node-string-utils"
+name: "实现字符串工具函数"
+description: "为一个 Node.js 项目实现一组字符串工具函数，包含实现与单元测试。"
+
+project:
+  type: "node"
+  framework: "generic"
+  root: "."
+
+goals:
+  - "实现 slugify / truncate / capitalize"
+  - "为每个函数补充单元测试"
+  - "不引入额外运行时依赖"
+
+constraints:
+  - "只在 src/utils 下新增文件"
+  - "不要修改打包配置"
+  - "所有导出函数都要有 JSDoc"
+
+steps:
+  - id: "scaffold"
+    title: "创建工具函数文件骨架"
+    expected_output:
+      - "src/utils/string.js"
+      - "导出 slugify / truncate / capitalize"
+  - id: "implement"
+    title: "实现函数逻辑"
+    expected_output:
+      - "slugify 处理空格与大小写"
+      - "truncate 支持自定义后缀"
+  - id: "test"
+    title: "补充单元测试"
+    expected_output:
+      - "覆盖正常与边界用例"
+  - id: "final_check"
+    title: "最终验收"
+    expected_output:
+      - "运行测试并输出结果"
+      - "输出变更文件清单"
+
+acceptance:
+  commands:
+    - "npm test"
+  required:
+    - "所有测试通过"
+    - "输出最终总结"
+
+context:
+  language: "zh-CN"

@@ -1,0 +1,53 @@
+{
+  "name": "ai-code-orchestrator",
+  "version": "0.1.0",
+  "description": "A local AI coding task orchestrator with checkpoint, watchdog, and engine failover.",
+  "keywords": [
+    "ai",
+    "claude",
+    "codex",
+    "orchestrator",
+    "cli",
+    "checkpoint",
+    "failover"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "ai-code-orchestrator": "bin/ai-code-orchestrator"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "execa": "^9.3.0",
+    "fs-extra": "^11.2.0",
+    "ora": "^8.0.1",
+    "yaml": "^2.5.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0"
+  }
+}

@@ -1,0 +1,59 @@
+id: "vue-login-page"
+name: "实现登录页面 (Vue 3)"
+description: "为一个 Vue 3 + Vite 项目实现登录页面，包含表单校验与接口对接。"
+
+project:
+  type: "vue"
+  framework: "vue3-vite"
+  root: "."
+
+goals:
+  - "新增登录页面组件"
+  - "完成表单校验"
+  - "对接登录接口"
+  - "不破坏现有路由"
+
+constraints:
+  - "复用现有 UI 组件库与样式规范"
+  - "不要修改全局请求拦截器"
+  - "不要删除现有页面"
+
+steps:
+  - id: "analyze"
+    title: "分析现有路由与请求封装"
+    expected_output:
+      - "找到路由配置"
+      - "找到 http 请求封装"
+      - "输出实现计划"
+  - id: "component"
+    title: "实现登录页面组件"
+    expected_output:
+      - "LoginView.vue"
+      - "账号/密码输入与提交按钮"
+  - id: "validation"
+    title: "实现表单校验"
+    expected_output:
+      - "必填校验"
+      - "错误提示"
+  - id: "api"
+    title: "对接登录接口"
+    expected_output:
+      - "调用登录 API"
+      - "登录成功后跳转"
+  - id: "final_check"
+    title: "最终验收"
+    expected_output:
+      - "运行构建"
+      - "输出变更文件"
+      - "输出使用说明"
+
+acceptance:
+  commands:
+    - "npm run build"
+  required:
+    - "构建通过"
+    - "输出最终总结"
+
+context:
+  coding_style: "遵循现有项目风格"
+  language: "zh-CN"

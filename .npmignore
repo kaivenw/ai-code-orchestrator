@@ -1,0 +1,11 @@
+src/
+tests/
+examples/
+docs/
+.github/
+tsconfig.json
+vitest.config.ts
+.gitignore
+*.log
+.ai-orchestrator/
+coverage/
