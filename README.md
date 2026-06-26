@@ -1,63 +1,65 @@
+<div align="right">
+
+**中文 | [English](README.en.md)**
+
+</div>
+
 # AI Code Orchestrator
 
-> **Claude Code stopped? Codex continues.**
-> Claude Code 卡住了？Codex 自动接着干。
+> **Claude Code 卡住了？Codex 自动接着干。**
 
-AI Code Orchestrator is a local CLI tool that runs structured coding tasks with
-multiple AI coding engines, saves a checkpoint after every step, detects stalled
-runs, and automatically fails over to another engine when the primary one gets
-stuck, times out, hits a rate limit, or runs out of quota.
+一个本地 CLI 工具，用多个 AI 编码引擎执行标准化开发任务：每完成一步就保存一次
+checkpoint，监控卡住的执行，并在主引擎卡住、超时、触发限流或额度不足时，**自动切换
+到备用引擎继续干**。
 
-It does **not** replace Claude Code or Codex — it *orchestrates* them. The
-engines read and write your code; the orchestrator standardizes the task,
-monitors execution, persists checkpoints, and switches engines on failure.
+它**不替代** Claude Code 或 Codex，而是**编排**它们：引擎负责真正读代码、改代码、
+跑命令；编排器负责标准化任务、监控状态、保存断点、失败切换。
 
-## Features
+## 功能特性
 
-- Run structured coding tasks from a single `task.yaml`
-- Claude Code / Codex / Mock engine adapters (CLI subprocess wrappers)
-- Checkpoint after each step — never lose context on a crash
-- Resume interrupted tasks from the last checkpoint
-- Watchdog for stalled / no-output / hard-timeout runs
-- Automatic failover with per-step and total switch limits
-- Local-first state storage (no Redis / MySQL / Docker required)
-- `--dry-run`, structured logs, and sensitive-file safety guards
+- 用一个 `task.yaml` 驱动标准化的多步骤开发任务
+- Claude Code / Codex / Mock 三种引擎适配器（CLI 子进程封装）
+- 每步保存 checkpoint —— 进程崩了也不丢上下文
+- 从最后一个 checkpoint 断点续跑
+- Watchdog 监控卡住 / 长时间无输出 / 硬超时
+- 自动 failover，带单步与总切换次数上限
+- 本地优先存储（无需 Redis / MySQL / Docker）
+- 支持 `--dry-run`、结构化日志、敏感文件保护
 
-## Installation
+## 安装
 
 ```bash
-git clone <repo-url> ai-code-orchestrator
+git clone https://github.com/kaivenw/ai-code-orchestrator.git
 cd ai-code-orchestrator
 npm install
 npm run build
-npm link            # exposes the `ai-code-orchestrator` command globally
+npm link            # 注册全局 `ai-code-orchestrator` 命令
 ```
 
-Verify:
+验证：
 
 ```bash
 ai-code-orchestrator --help
 ```
 
-> Requires Node.js >= 18. For real engine execution you also need the `claude`
-> and/or `codex` CLIs installed and authenticated. Run `ai-code-orchestrator
-> doctor` to check your environment.
+> 需要 Node.js >= 18。若要真实调用引擎，还需安装并登录 `claude` 和/或 `codex` CLI。
+> 运行 `ai-code-orchestrator doctor` 可检查本机环境。
 
-## Quick Start
+## 快速开始
 
 ```bash
-# 1. Scaffold config + a starter task in your project
+# 1. 在你的项目里生成配置和起始任务
 cd /path/to/your/project
 ai-code-orchestrator init
 
-# 2. Try the full pipeline with the built-in mock engine (no real AI calls)
+# 2. 先用内置 mock 引擎跑通整条链路（不调用真实 AI）
 ai-code-orchestrator run task.yaml --engine mock
 
-# 3. Inspect the result
+# 3. 查看结果
 ai-code-orchestrator status
 ```
 
-`init` creates:
+`init` 会生成：
 
 ```text
 .ai-orchestrator/
@@ -68,81 +70,77 @@ ai-code-orchestrator status
 task.yaml
 ```
 
-## Run
+## 执行任务
 
 ```bash
-ai-code-orchestrator run task.yaml                      # use config defaults
-ai-code-orchestrator run task.yaml --engine claude      # pick primary engine
-ai-code-orchestrator run task.yaml --fallback codex     # pick fallback engine
-ai-code-orchestrator run task.yaml --fallback none      # disable failover
-ai-code-orchestrator run task.yaml --timeout 120        # override engine timeout
-ai-code-orchestrator run task.yaml --dry-run            # print plan, run nothing
+ai-code-orchestrator run task.yaml                      # 使用配置默认值
+ai-code-orchestrator run task.yaml --engine claude      # 指定主引擎
+ai-code-orchestrator run task.yaml --fallback codex     # 指定备用引擎
+ai-code-orchestrator run task.yaml --fallback none      # 禁用 failover
+ai-code-orchestrator run task.yaml --timeout 120        # 覆盖引擎超时（秒）
+ai-code-orchestrator run task.yaml --dry-run            # 只打印计划，不执行
 ```
 
-## Resume
+## 断点续跑
 
-If a task pauses (failure on both engines, or a non-failoverable error), fix the
-issue and continue from the last checkpoint:
+如果任务被暂停（两个引擎都失败，或遇到不可切换的错误），修复问题后从最后一个
+checkpoint 继续：
 
 ```bash
-ai-code-orchestrator resume                # uses state.json's task + engine
-ai-code-orchestrator resume task.yaml      # or pass the task explicitly
-ai-code-orchestrator switch codex          # change engine, then resume
+ai-code-orchestrator resume                # 沿用 state.json 里的任务与引擎
+ai-code-orchestrator resume task.yaml      # 或显式指定任务文件
+ai-code-orchestrator switch codex          # 切换引擎后再 resume
 ```
 
-## Configuration
+## 配置
 
-All behavior is driven by `.ai-orchestrator/config.yaml` — CLI flags only
-override per run. See [docs/task-format.md](docs/task-format.md) and the inline
-comments in the generated config. Key sections: `engines`, `watchdog`,
-`failover`, `checkpoint`, `logging`, `safety`, `execution`.
+所有行为都由 `.ai-orchestrator/config.yaml` 驱动，CLI 参数只对单次运行生效。详见
+[docs/task-format.md](docs/task-format.md) 以及生成配置里的注释。主要分区：`engines`、
+`watchdog`、`failover`、`checkpoint`、`logging`、`safety`、`execution`。
 
-## Task Format
+## 任务格式
 
-A task is a list of ordered steps, each with `expected_output` acceptance hints.
-See [docs/task-format.md](docs/task-format.md) and [examples/](examples/).
+一个任务是一组有序步骤，每步带 `expected_output` 验收提示。详见
+[docs/task-format.md](docs/task-format.md) 和 [examples/](examples/)。
 
-## How Failover Works
+## Failover 如何工作
 
 ```text
-run step → primary engine
-  ├── success → parse checkpoint → save state → next step
-  └── fail / timeout / no-output / quota / rate-limit
-        → save partial checkpoint
-        → switch to fallback engine (within switch limits)
-        → fallback resumes the SAME step using the checkpoint
+执行 step → 主引擎
+  ├── 成功 → 解析 checkpoint → 保存状态 → 下一步
+  └── 失败 / 超时 / 无输出 / 额度不足 / 限流
+        → 保存 partial checkpoint
+        → 切换到备用引擎（在切换次数上限内）
+        → 备用引擎基于 checkpoint 继续执行同一 step
 ```
 
-Switch limits (`failover.max_switch_per_step`, `failover.max_total_switch`)
-prevent infinite ping-ponging. When limits are hit the task is **paused**, not
-silently dropped. See [docs/checkpoint.md](docs/checkpoint.md).
+切换上限（`failover.max_switch_per_step`、`failover.max_total_switch`）可防止无限来回
+切换。触达上限时任务会被**暂停**，而不是被悄悄丢弃。详见
+[docs/checkpoint.md](docs/checkpoint.md)。
 
-## Safety Notes
+## 安全须知
 
-This tool invokes AI coding CLIs that modify your local code. **Only use it in
-trusted projects under version control.** Commit or back up before running.
-Sensitive files (`.env`, `*.pem`, `*.key`, prod configs, …) are flagged in
-config and reported if touched. Raw engine output is always written to
-`.ai-orchestrator/logs/` — nothing is swallowed.
+本工具会调用 AI 编码 CLI 修改你的本地代码。**请只在受版本控制的可信项目中使用**，
+运行前先提交或备份。匹配 `safety.protected_files` 的敏感文件（`.env`、`*.pem`、
+`*.key`、生产配置等）若被改动会被标记。引擎原始输出始终写入
+`.ai-orchestrator/logs/`，不会被吞掉。
 
-## Examples
+## 示例
 
 - [examples/simple-node-task](examples/simple-node-task)
 - [examples/java-spring-boot-task](examples/java-spring-boot-task)
 - [examples/vue-task](examples/vue-task)
 
-## Roadmap
+## 路线图
 
-See [docs/roadmap.md](docs/roadmap.md). Highlights: v0.1 Claude run loop →
-v0.2 Codex failover → v0.3 watchdog → v0.4 doctor/clean/examples → v1.0 npm
-release.
+详见 [docs/roadmap.md](docs/roadmap.md)。要点：v0.1 Claude 执行闭环 → v0.2 Codex
+failover → v0.3 watchdog → v0.4 doctor/clean/examples → v1.0 npm 发布。
 
-## Contributing
+## 参与贡献
 
-Issues and PRs welcome. Run `npm test` and `npm run build` before submitting.
-New engines only need to implement the `Engine` interface
-(see [docs/engine-adapter.md](docs/engine-adapter.md)).
+欢迎提 Issue 和 PR。提交前请先跑 `npm test` 和 `npm run build`。新增引擎只需实现
+`Engine` 接口（见 [docs/engine-adapter.md](docs/engine-adapter.md)）。
 
-## License
+## 许可协议
 
 [MIT](LICENSE)
