@@ -1,14 +1,14 @@
 <div align="right">
 
-**中文 | [English](checkpoint.en.md)**
+**[中文](checkpoint.md) | English**
 
 </div>
 
-# Checkpoint 与状态
+# Checkpoints & State
 
-## 状态 State（`.ai-orchestrator/state.json`）
+## State (`.ai-orchestrator/state.json`)
 
-当前运行的单一快照，会被覆盖更新：
+A single, overwritten snapshot of the current run:
 
 ```json
 {
@@ -29,11 +29,11 @@
 }
 ```
 
-status 取值：`idle`、`running`、`completed`、`paused`、`failed`。
+Status values: `idle`, `running`, `completed`, `paused`, `failed`.
 
-## Checkpoint（`.ai-orchestrator/checkpoints/<task>-<step>.json`）
+## Checkpoint (`.ai-orchestrator/checkpoints/<task>-<step>.json`)
 
-每个步骤一个文件，是续跑/失败切换的上下文单元：
+One file per step, the unit of resume/failover context:
 
 ```json
 {
@@ -53,20 +53,21 @@ status 取值：`idle`、`running`、`completed`、`paused`、`failed`。
 }
 ```
 
-status 取值：`completed`、`partial`、`failed`。
+Status values: `completed`, `partial`, `failed`.
 
-## 解析策略
+## Parsing strategy
 
-引擎输出不稳定，所以解析器做了容错（`result-parser.ts`）：
+Engine output is messy, so the parser is tolerant (`result-parser.ts`):
 
-1. 优先取**最后一个** ```json 代码块。
-2. 否则取文本里最后一个配平的 `{ ... }` 对象。
-3. 若都解析不出，则生成一个 **partial** checkpoint，并记录原始输出文件 —— 解析失败也绝不
-   丢上下文。
+1. Prefer the **last** ```json fenced block.
+2. Otherwise, the last balanced `{ ... }` object in the text.
+3. If nothing parses, build a **partial** checkpoint that records the raw output
+   file — context is never lost on a parse failure.
 
-## 失败切换与上限
+## Failover & limits
 
-当某步以可切换错误失败（`timeout`、`quota`、`rate_limit`、`no_output`、`crash`、`auth`），
-备用引擎会基于最新 checkpoint 接管**同一个步骤**。切换次数受
-`failover.max_switch_per_step` 和 `failover.max_total_switch` 限制；任一超限就**暂停**任务，
-而不是无限循环。
+When a step fails with a failoverable error (`timeout`, `quota`, `rate_limit`,
+`no_output`, `crash`, `auth`), the fallback engine takes over the **same step**
+using the latest checkpoint. Switching is bounded by
+`failover.max_switch_per_step` and `failover.max_total_switch`; exceeding either
+pauses the task instead of looping forever.

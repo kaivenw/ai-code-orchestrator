@@ -1,26 +1,31 @@
-# Roadmap
+<div align="right">
 
-## v0.1.0 — minimal run loop
-`task.yaml → Claude executes → checkpoint → status`
-- init, run, status
-- Claude engine, State store, Checkpoint store, README
+**中文 | [English](roadmap.en.md)**
 
-## v0.2.0 — Codex fallback
-`Claude fails → Codex takes over`
-- Codex engine, Failover, Error classifier, Resume prompt, Mock engine tests
+</div>
 
-## v0.3.0 — Watchdog
-`No output for a while → auto-kill → fallback`
-- heartbeat, stall detector, no-output timeout, hard timeout, richer logs
+# 路线图
 
-## v0.4.0 — usable on real projects
-- doctor, clean, examples, protected-file safety, git status checks, more tests
+## v0.1.0 —— 最小可运行闭环
+`task.yaml → Claude 执行 → checkpoint → status`
+- init、run、status
+- Claude 引擎、状态存储、Checkpoint 存储、README
 
-## v1.0.0 — open-source release
-`npm install -g` and run reliably
-- full docs, CI, core unit-test coverage, GitHub Actions, npm publish, MIT
+## v0.2.0 —— Codex 失败切换
+`Claude 失败 → Codex 接管`
+- Codex 引擎、Failover、错误分类器、Resume 提示词、Mock 引擎测试
 
-## Beyond v1
-- Web console, multi-user, cloud sync, DAG workflows, plugin marketplace,
-  auto-PR, multi-repo parallel tasks
-- More engine adapters: DeepSeek, Gemini, Qwen, Cursor, Trae
+## v0.3.0 —— Watchdog
+`长时间无输出 → 自动 kill → fallback`
+- 心跳、卡住检测、无输出超时、硬超时、更丰富的日志
+
+## v0.4.0 —— 真实项目可用
+- doctor、clean、examples、敏感文件保护、git 状态检查、更完整测试
+
+## v1.0.0 —— 开源发布版
+`npm install -g` 后稳定运行
+- 完整文档、CI、核心单测覆盖、GitHub Actions、npm publish、MIT
+
+## v1 之后
+- Web 控制台、多用户、云端同步、DAG 工作流、插件市场、自动发 PR、多仓库并行任务
+- 更多引擎适配器：DeepSeek、Gemini、Qwen、Cursor、Trae

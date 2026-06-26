@@ -98,14 +98,14 @@ ai-code-orchestrator switch codex          # change engine, then resume
 ## Configuration
 
 All behavior is driven by `.ai-orchestrator/config.yaml` — CLI flags only
-override per run. See [docs/task-format.md](docs/task-format.md) and the inline
+override per run. See [docs/task-format.md](docs/task-format.en.md) and the inline
 comments in the generated config. Key sections: `engines`, `watchdog`,
 `failover`, `checkpoint`, `logging`, `safety`, `execution`.
 
 ## Task Format
 
 A task is a list of ordered steps, each with `expected_output` acceptance hints.
-See [docs/task-format.md](docs/task-format.md) and [examples/](examples/).
+See [docs/task-format.md](docs/task-format.en.md) and [examples/](examples/).
 
 ## How Failover Works
 
@@ -120,7 +120,7 @@ run step → primary engine
 
 Switch limits (`failover.max_switch_per_step`, `failover.max_total_switch`)
 prevent infinite ping-ponging. When limits are hit the task is **paused**, not
-silently dropped. See [docs/checkpoint.md](docs/checkpoint.md).
+silently dropped. See [docs/checkpoint.md](docs/checkpoint.en.md).
 
 ## Safety Notes
 
@@ -138,7 +138,7 @@ config and reported if touched. Raw engine output is always written to
 
 ## Roadmap
 
-See [docs/roadmap.md](docs/roadmap.md). Highlights: v0.1 Claude run loop →
+See [docs/roadmap.md](docs/roadmap.en.md). Highlights: v0.1 Claude run loop →
 v0.2 Codex failover → v0.3 watchdog → v0.4 doctor/clean/examples → v1.0 npm
 release.
 
@@ -146,7 +146,7 @@ release.
 
 Issues and PRs welcome. Run `npm test` and `npm run build` before submitting.
 New engines only need to implement the `Engine` interface
-(see [docs/engine-adapter.md](docs/engine-adapter.md)).
+(see [docs/engine-adapter.md](docs/engine-adapter.en.md)).
 
 ## License
 

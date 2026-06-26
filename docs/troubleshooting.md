@@ -1,46 +1,47 @@
-# Troubleshooting
+<div align="right">
+
+**中文 | [English](troubleshooting.en.md)**
+
+</div>
+
+# 常见问题排查
 
 ## `ai-code-orchestrator: command not found`
 
-Run `npm run build && npm link` from the project root. Confirm with
-`which ai-code-orchestrator`.
+在项目根目录运行 `npm run build && npm link`，再用 `which ai-code-orchestrator` 确认。
 
-## `doctor` reports Claude / Codex CLI not found
+## `doctor` 报告找不到 Claude / Codex CLI
 
-Install and authenticate the engine CLIs separately:
+单独安装并登录这两个引擎 CLI：
 
-- Claude Code CLI must respond to `claude --version`.
-- Codex CLI must respond to `codex --version`.
+- Claude Code CLI 要能响应 `claude --version`。
+- Codex CLI 要能响应 `codex --version`。
 
-You can still try everything with `--engine mock` without either installed.
+即使两个都没装，也可以用 `--engine mock` 把整条链路跑通试试。
 
-## Task immediately pauses with "too many failovers"
+## 任务一上来就以"too many failovers"暂停
 
-The primary engine keeps failing on one step. Check the per-engine log
-(`.ai-orchestrator/logs/<run_id>.<engine>.log`) and the partial checkpoint for
-the step. Raise `failover.max_switch_per_step` only if the failures are
-transient (rate limits), otherwise fix the underlying issue and `resume`.
+说明主引擎在某一步上反复失败。查看对应的引擎日志
+（`.ai-orchestrator/logs/<run_id>.<engine>.log`）和该步的 partial checkpoint。只有当失败是
+临时性的（如限流）才调高 `failover.max_switch_per_step`，否则请先修复根因再 `resume`。
 
 ## "Another run appears to be in progress (run.lock held)"
 
-A previous run crashed without releasing the lock, or one is genuinely running.
-If you're sure nothing is running, remove `.ai-orchestrator/run.lock`. Stale
-locks from dead PIDs are detected and reclaimed automatically.
+要么上次运行崩溃没释放锁，要么确实有一个在跑。如果确认没有在跑，删除
+`.ai-orchestrator/run.lock` 即可。来自已死进程 PID 的过期锁会被自动检测并回收。
 
-## Checkpoint JSON wasn't parsed
+## checkpoint JSON 没被解析出来
 
-If the engine didn't emit a clean ```json block, a `partial` checkpoint is
-created pointing at `raw_output_file`. Inspect that log, then `resume` — the
-fallback/primary engine will continue from `next_action`.
+如果引擎没有输出干净的 ```json 块，会生成一个指向 `raw_output_file` 的 `partial`
+checkpoint。查看那份日志，然后 `resume` —— 备用/主引擎会从 `next_action` 继续。
 
-## Engine modifies a sensitive file
+## 引擎改动了敏感文件
 
-Files matching `safety.protected_files` (e.g. `.env`, `*.pem`, prod configs) are
-flagged. Review the diff with `git diff` before committing. Always run inside a
-git repo with a clean (or backed-up) working tree.
+匹配 `safety.protected_files` 的文件（如 `.env`、`*.pem`、生产配置）会被标记。提交前先用
+`git diff` 审查。务必在 git 仓库中、工作区干净（或已备份）的情况下运行。
 
-## Reset everything
+## 重置一切
 
 ```bash
-ai-code-orchestrator clean --all   # state + logs + checkpoints
+ai-code-orchestrator clean --all   # 状态 + 日志 + checkpoints
 ```
